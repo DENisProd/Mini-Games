@@ -1,0 +1,16 @@
+.element {
+    padding: var(--global-gap) var(--global-gap2);
+    background: var(--primary2);
+    border-radius: var(--border-radius05);
+    font-size: 0.9rem;
+    font-weight: 600;
+    // height: 36px;
+
+    &.blue {
+        background: #7facf0;
+    }
+
+    &.orange {
+        background: #ffc04a;
+    }
+}

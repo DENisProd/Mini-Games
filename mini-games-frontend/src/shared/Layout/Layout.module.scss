@@ -1,0 +1,39 @@
+.Layout {
+    display: flex;
+    gap: var(--global-gap);
+    flex-direction: column;
+    padding: var(--global-gap);
+    width: 100%;
+
+    &.horizontal {
+        flex-direction: row;
+    }
+
+    &.no_padding {
+        padding: 0 !important;
+    }
+
+    &.space_between {
+        justify-content: space-between;
+
+        & div {
+            flex: 1;
+        }
+    }
+    &.padding_bottom {
+        padding-bottom: 6rem;
+    }
+    &.relative {
+        position: relative;
+    }
+    &.center {
+        justify-content: center;
+        align-items: center;
+    }
+    &.wrap {
+        flex-wrap: wrap;
+    }
+    &.align {
+        align-items: center;
+    }
+}

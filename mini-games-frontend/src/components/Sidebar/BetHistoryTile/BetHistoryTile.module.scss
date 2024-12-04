@@ -1,0 +1,26 @@
+.amount {
+    padding: 8px var(--global-gap2);
+    background: #ff4d88;
+    height: 38px;
+    font-size: 16px;
+    flex: none !important;
+    border-radius: var(--border-radius05);
+    font-weight: 600;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    text-align: center;
+    align-items: center;
+    height: 38px;
+}
+
+.win {
+    border: 1px solid var(--background-tile);
+
+    &.win {
+        background: #1d203c;
+        border: 1px solid #383f77;
+    }
+}

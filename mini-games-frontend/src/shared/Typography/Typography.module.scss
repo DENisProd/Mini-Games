@@ -1,0 +1,76 @@
+.h1 {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+.h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+.h3 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+.h4 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+.p {
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.base {
+    color: var(--text);
+
+    &.bold {
+        font-weight: bold;
+    }
+    &.regular {
+        font-weight: regular;
+    }
+    &.italic {
+        font-style: italic;
+    }
+}
+
+.wait_block {
+    border-radius: 0.5rem;
+    background: linear-gradient(86deg, #f0f3f7 46.87%, #ced4dc 65.62%, #f0f3f7 94.27%);
+    border: 1px solid var(--border-color);
+    display: flex;
+    width: 100%;
+    height: 1rem;
+    padding: 0.8rem 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    background-size: 200% 100%;
+    animation: moveBackground 1s linear infinite;
+}
+
+.margin {
+    margin-bottom: var(--global-gap);
+}
+
+.horizontal_clamp {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vertical_clamp {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}

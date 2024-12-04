@@ -1,0 +1,45 @@
+.sidebar {
+    // flex: 2;
+    max-width: 650px;
+    padding: 0 var(--global-gap) var(--global-gap) var(--global-gap);
+    border-radius: var(--border-radius);
+    // height: 86vh;
+    height: 100%;
+    width: 30%;
+    overflow-y: auto;
+    margin-right: var(--global-gap);
+
+    & header {
+        background: var(--background);
+        padding: var(--global-gap) 0;
+        top: 0vh;
+        position: sticky;
+    }
+
+    & .tabs {
+        margin-top: var(--global-gap2);
+        width: 100%;
+    }
+
+    & .subtitle {
+        color: #777777;
+        margin-block-end: 0;
+    }
+
+    & .title {
+        margin-block-start: 0;
+    } 
+}
+
+@media screen and (max-width: 1280px) {
+    .sidebar {
+        width: 96%;
+        // margin: var(--global-gap2);
+        margin-right: 0;
+        padding: var(--global-gap2);
+
+        & button {
+            font-size: 14px !important;
+        }
+    }
+}

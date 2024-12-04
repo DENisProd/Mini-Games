@@ -1,0 +1,18 @@
+.container {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding-right: var(--global-gap2);
+    overflow: hidden;
+}
+
+.gradient {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 35%;
+    height: 44px;
+    background: linear-gradient(90deg, rgba(193,174,253,0) 0%, rgba(0,0,0,1) 100%);
+}

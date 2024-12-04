@@ -1,0 +1,20 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--global-gap);
+    width: 70%;
+    margin-right: var(--global-gap2);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: var(--global-gap2);
+    height: 100vh;
+}
+
+@media screen and (max-width: 1280px) {
+    .content {
+        width: 100%;
+        height: 50vh;
+        margin-right: 0;
+        padding: var(--global-gap2);
+    }
+}

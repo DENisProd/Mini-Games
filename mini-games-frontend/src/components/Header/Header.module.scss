@@ -1,0 +1,57 @@
+.header {
+    width: 100%;
+    padding: var(--global-gap2);
+    position: fixed;
+    top: 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--background-tile);
+    z-index: 150;
+
+    & .title {
+        display: flex;
+        gap: var(--global-gap);
+        align-items: center;
+        font-size: 20px;
+        font-weight: 800;
+
+        & .logo {
+            width: 32px;
+            height: 32px;
+        }
+
+        & .primary {
+            color: var(--primary2);
+        }
+    }
+
+    & .buttons_container {
+        display: flex;
+        gap: var(--global-gap);
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    .header {
+        padding: var(--global-gap);
+        // flex-direction: column;
+
+        & .text {
+            display: none;
+        }
+
+        & button {
+            font-size: 12px !important;
+        }
+
+        & .title {
+            font-size: 12px;
+        }
+
+        & .buttons_container {
+            margin-top: var(--global-gap);
+        }
+    }
+}

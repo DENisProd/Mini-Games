@@ -1,0 +1,40 @@
+.card {
+    width: fit-content;
+
+    &.blocked {
+        // pointer-events: none;
+    }
+
+    & .bet_button {
+        // height: 100%;
+    }
+
+    & .input {
+        background: none;
+        border: none;
+        outline: none;
+        // padding: 4px var(--global-gap2);
+        border-radius: var(--border-radius05);
+        font-size: 18px;
+        font-weight: 600;
+        width: 100px;
+        color: var(--text);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .card {
+        width: 100%;
+
+        & button {
+            font-size: 14px !important;
+        }
+    }
+    .container {
+        flex-direction: column !important;
+
+        & button {
+            width: 100%;
+        }
+    }
+}
