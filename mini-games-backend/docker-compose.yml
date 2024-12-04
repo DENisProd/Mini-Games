@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:14-alpine
-    container_name: IStudentGames
+    container_name: postgres_games
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -23,6 +23,16 @@ services:
       - "5050:80"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
+  games:
+    container_name: mini_games
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
 volumes:
   db:
   pgadmin-data:

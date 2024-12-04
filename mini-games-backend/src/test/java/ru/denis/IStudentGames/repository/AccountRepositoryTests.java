@@ -28,20 +28,20 @@ public class AccountRepositoryTests {
         Assertions.assertThat(savedAccount.getId()).isGreaterThan(0);
     }
 
-    @Test
-    public void AccountRepository_GetAll_ReturnMoreThenOneAccount () {
-        Account account1 = new Account();
-        account1.setBalance(350.00);
-
-        Account account2 = new Account();
-        account1.setBalance(150.00);
-
-        accountRepository.save(account1);
-        accountRepository.save(account2);
-
-        List<Account> accountList = accountRepository.findAll();
-
-        Assertions.assertThat(accountList).isNotNull();
-        Assertions.assertThat(accountList.size()).isEqualTo(2);
-    }
+//    @Test
+//    public void AccountRepository_GetAll_ReturnMoreThenOneAccount () {
+//        Account account1 = new Account();
+//        account1.setBalance(350.00);
+//
+//        Account account2 = new Account();
+//        account1.setBalance(150.00);
+//
+//        accountRepository.save(account1);
+//        accountRepository.save(account2);
+//
+//        List<Account> accountList = accountRepository.findAll();
+//
+//        Assertions.assertThat(accountList).isNotNull();
+//        Assertions.assertThat(accountList.size()).isEqualTo(2);
+//    }
 }

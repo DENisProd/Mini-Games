@@ -1,8 +1,7 @@
 spring:
-  config:
-    import: optional:file:.env[.properties]
+  profile: dev
   datasource:
-    url: ${DATABASE_URL}
+    url: jdbc:postgresql://${DB_HOST}:5432/games
     username: ${DB_USER}
     password: ${DB_PASSWORD}
 
@@ -18,5 +17,4 @@ spring:
     show-sql: false
 
 server:
-  port: 9000
-
+  port: 8080
