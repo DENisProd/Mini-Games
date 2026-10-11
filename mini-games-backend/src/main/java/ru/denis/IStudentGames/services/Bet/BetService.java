@@ -84,7 +84,17 @@ public class BetService {
         return bet;
     }
 
+    private static final int BETS_PAGE_SIZE = 20;
+
     public List<BetResponseDTO> fetchLastBets () {
-        return betRepository.findLastBets(PageRequest.of(0, 20));
+        return betRepository.findLastBets(PageRequest.of(0, BETS_PAGE_SIZE));
+    }
+
+    public List<BetResponseDTO> fetchPlayerBets (String clientId) {
+        return betRepository.findLastBetsByClientId(clientId, PageRequest.of(0, BETS_PAGE_SIZE));
+    }
+
+    public List<BetResponseDTO> fetchTopBets () {
+        return betRepository.findTopBets(PageRequest.of(0, BETS_PAGE_SIZE));
     }
 }

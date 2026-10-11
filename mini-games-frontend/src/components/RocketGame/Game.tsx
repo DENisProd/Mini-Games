@@ -23,7 +23,7 @@ const toastOptions: ToastOptions = {
 const refreshData = () => {
     useUserStore.getState().getBalance();
     useGameStore.getState().getLastGames();
-    useGameStore.getState().getLastBets();
+    useGameStore.getState().refreshBets();
 };
 
 const Game = () => {

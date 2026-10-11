@@ -28,7 +28,13 @@
 
     & .title {
         margin-block-start: 0;
-    } 
+    }
+
+    & .empty {
+        color: #777777;
+        text-align: center;
+        padding: var(--global-gap2) 0;
+    }
 }
 
 @media screen and (max-width: 1280px) {

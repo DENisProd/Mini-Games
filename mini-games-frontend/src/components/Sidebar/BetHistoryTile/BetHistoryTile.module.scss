@@ -24,3 +24,29 @@
         border: 1px solid #383f77;
     }
 }
+
+.place {
+    justify-self: center;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--background-tile);
+
+    &.place_1 {
+        background: #ffc04a;
+        color: #000;
+    }
+
+    &.place_2 {
+        background: #c9d1e0;
+        color: #000;
+    }
+
+    &.place_3 {
+        background: #d08a4f;
+        color: #000;
+    }
+}

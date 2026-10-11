@@ -15,22 +15,32 @@ export interface Game {
 
 export interface Bet {
     id: number;
+    playerId?: number;
     amount: number;
     winAmount: number;
     endedAt?: string | null;
 }
 
+export type BetsTab = "all" | "my" | "top";
+
+const fetchBets: Record<BetsTab, () => Promise<Bet[]>> = {
+    all: () => betService.getLastBets(),
+    my: () => betService.getMyBets(useUserStore.getState().user.clientId),
+    top: () => betService.getTopBets(),
+};
+
 interface GameState {
     gameId: string;
     lastGames: Game[];
-    lastBets: Bet[];
+    bets: Record<BetsTab, Bet[]>;
     currentBet: Bet | null;
 
     setGameId(gameId: string): void;
     createBet(gameId: string, clientId: string, amount: number): void;
     setCurrentBet(bet: Bet | null): void;
     getLastGames(): void;
-    getLastBets(): void;
+    getBets(tab: BetsTab): void;
+    refreshBets(): void;
 }
 
 const errorMessage = (error: unknown) => {
@@ -41,7 +51,7 @@ const errorMessage = (error: unknown) => {
 export const useGameStore = create<GameState>((set, get) => ({
     gameId: "",
     lastGames: [],
-    lastBets: [],
+    bets: { all: [], my: [], top: [] },
     currentBet: null,
 
     setGameId: (gameId: string) => {
@@ -67,10 +77,12 @@ export const useGameStore = create<GameState>((set, get) => ({
             .then((lastGames) => set({ lastGames }))
             .catch(console.error);
     },
-    getLastBets: () => {
-        betService
-            .getLastBets()
-            .then((lastBets) => set({ lastBets }))
+    getBets: (tab: BetsTab) => {
+        fetchBets[tab]()
+            .then((list) => set({ bets: { ...get().bets, [tab]: list } }))
             .catch(console.error);
+    },
+    refreshBets: () => {
+        (Object.keys(fetchBets) as BetsTab[]).forEach((tab) => get().getBets(tab));
     },
 }));

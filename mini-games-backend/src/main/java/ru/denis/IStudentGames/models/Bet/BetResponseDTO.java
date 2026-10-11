@@ -1,17 +1,16 @@
 package ru.denis.IStudentGames.models.Bet;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-public class BetResponseDTO extends Bet{
+@Data
+@AllArgsConstructor
+public class BetResponseDTO {
+    private Long id;
+    private Long playerId;
+    private double amount;
+    private double winAmount;
     private LocalDateTime endedAt;
-
-    public BetResponseDTO(LocalDateTime endedAt, Long id, double amount, double winAmount) {
-        super(id, amount, winAmount);
-        this.endedAt = endedAt;
-    }
 }

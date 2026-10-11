@@ -46,4 +46,20 @@ public class BetController {
                 .ok()
                 .body(new ResponseDTO<List<BetResponseDTO>>("ok", true, bets));
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> fetchMy (@RequestParam("clientId") String clientId) {
+        List<BetResponseDTO> bets = betService.fetchPlayerBets(clientId);
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO<List<BetResponseDTO>>("ok", true, bets));
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity<?> fetchTop () {
+        List<BetResponseDTO> bets = betService.fetchTopBets();
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO<List<BetResponseDTO>>("ok", true, bets));
+    }
 }

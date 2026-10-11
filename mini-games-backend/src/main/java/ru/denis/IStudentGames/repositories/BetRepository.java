@@ -16,6 +16,15 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
     @Query("SELECT b FROM Bet b WHERE b.id = :betId AND b.player.user.clientId = :clientId")
     Optional<Bet> findByIdAndClientId(@Param("betId") Long betId, @Param("clientId") String clientId);
 
-    @Query("SELECT new ru.denis.IStudentGames.models.Bet.BetResponseDTO(b.game.endedAt, b.id, b.amount, b.winAmount) FROM Bet b WHERE b.game.endedAt IS NOT NULL ORDER BY b.game.endedAt DESC")
+    @Query("SELECT new ru.denis.IStudentGames.models.Bet.BetResponseDTO(b.id, b.player.id, b.amount, b.winAmount, b.game.endedAt) " +
+            "FROM Bet b WHERE b.game.endedAt IS NOT NULL ORDER BY b.game.endedAt DESC, b.id DESC")
     List<BetResponseDTO> findLastBets(Pageable pageable);
+
+    @Query("SELECT new ru.denis.IStudentGames.models.Bet.BetResponseDTO(b.id, b.player.id, b.amount, b.winAmount, b.game.endedAt) " +
+            "FROM Bet b WHERE b.game.endedAt IS NOT NULL AND b.player.user.clientId = :clientId ORDER BY b.game.endedAt DESC, b.id DESC")
+    List<BetResponseDTO> findLastBetsByClientId(@Param("clientId") String clientId, Pageable pageable);
+
+    @Query("SELECT new ru.denis.IStudentGames.models.Bet.BetResponseDTO(b.id, b.player.id, b.amount, b.winAmount, b.game.endedAt) " +
+            "FROM Bet b WHERE b.game.endedAt IS NOT NULL AND b.winAmount > 0 ORDER BY b.winAmount DESC, b.id DESC")
+    List<BetResponseDTO> findTopBets(Pageable pageable);
 }
