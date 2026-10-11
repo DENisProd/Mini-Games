@@ -10,6 +10,7 @@ public class EnvInitializer {
 
         Dotenv dotenv = Dotenv.configure()
                 .filename(envFile)
+                .ignoreIfMissing()
                 .load();
         
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));

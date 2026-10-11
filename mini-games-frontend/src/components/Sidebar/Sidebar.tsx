@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./Sidebar.module.scss";
 import TabsContainer, { ITab } from "../../shared/TabsContainer/TabsContainer";
 import Typography from "../../shared/Typography/Typography";
@@ -30,9 +30,9 @@ const Sidebar = () => {
             <header>
                 <TabsContainer tabs={tabs} selected={selectedTab} selectTab={setSelectedTab} className={styles.tabs} fill />
                 <Typography variant="h3" text="Всего ставок:" className={styles.subtitle} />
-                <Typography variant="h1" text="785" className={styles.title} />
+                <Typography variant="h1" text={String(lastBets.length)} className={styles.title} />
             </header>
-            <Layout noPadding>{lastBets && lastBets.length > 0 && lastBets.map((bet) => <BetHistoryTile bet={bet} />)}</Layout>
+            <Layout noPadding>{lastBets && lastBets.length > 0 && lastBets.map((bet) => <BetHistoryTile key={bet.id} bet={bet} />)}</Layout>
         </div>
     );
 };

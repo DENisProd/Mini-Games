@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Button from "../../../shared/Button/Button";
 import Card from "../../../shared/Card/Card";
 import Layout from "../../../shared/Layout/Layout";
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const BetCard: React.FC<Props> = ({ isGameStarted, withdrawHandler }) => {
-    const { user, getBalance } = useUserStore();
+    const { user } = useUserStore();
     const { gameId, createBet, currentBet } = useGameStore();
     const [amount, setAmount] = useState<number>(10);
 
@@ -23,17 +23,19 @@ const BetCard: React.FC<Props> = ({ isGameStarted, withdrawHandler }) => {
     };
 
     const addHandler = (_amount: number) => {
-        setAmount((prevAmount) => prevAmount + _amount);
+        setAmount((prevAmount) => Math.max(1, prevAmount + _amount));
     };
 
-    const createBet1 = () => {
-        if (!isGameStarted) createBet(gameId, user.clientId, amount);
-        else if (isGameStarted && currentBet && withdrawHandler) withdrawHandler(user.clientId, gameId, currentBet.id);
-    };
+    const isWithdrawn = !!currentBet && currentBet.winAmount > 0;
+    // Во время полёта забрать можно только свою невыведенную ставку,
+    // до старта — сделать одну ставку на раунд
+    const canWithdraw = isGameStarted && !!currentBet && !isWithdrawn;
+    const canBet = !isGameStarted && !currentBet && amount > 0 && !!gameId;
 
-    useEffect(() => {
-        getBalance();
-    }, [currentBet])
+    const betHandler = () => {
+        if (canBet) createBet(gameId, user.clientId, amount);
+        else if (canWithdraw && currentBet) withdrawHandler(user.clientId, gameId, currentBet.id);
+    };
 
     return (
         <Card className={cn(styles.card, isGameStarted && styles.blocked)}>
@@ -63,8 +65,13 @@ const BetCard: React.FC<Props> = ({ isGameStarted, withdrawHandler }) => {
                         </Button>
                     </Layout>
                 </Layout>
-                <Button className={styles.bet_button} onClick={createBet1} disabled={!isGameStarted && !!currentBet} type={isGameStarted ? (currentBet ? "primary" : "secondary") : currentBet ? "secondary" : "primary"}>
-                    {isGameStarted ? "ЗАБРАТЬ" : "СТАВКА"}
+                <Button
+                    className={styles.bet_button}
+                    onClick={betHandler}
+                    disabled={isGameStarted ? !canWithdraw : !canBet}
+                    type={(isGameStarted ? canWithdraw : canBet) ? "primary" : "secondary"}
+                >
+                    {isWithdrawn ? "ВЫВЕДЕНО" : isGameStarted ? "ЗАБРАТЬ" : currentBet ? "СТАВКА СДЕЛАНА" : "СТАВКА"}
                 </Button>
             </Layout>
         </Card>

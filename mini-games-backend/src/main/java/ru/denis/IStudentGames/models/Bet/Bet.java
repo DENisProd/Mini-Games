@@ -18,11 +18,11 @@ public class Bet {
     private double amount;
     private double winAmount = 0.0;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Player player;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private GameEntity game;
 

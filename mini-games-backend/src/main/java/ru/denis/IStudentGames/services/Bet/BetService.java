@@ -36,6 +36,9 @@ public class BetService {
 
     @Transactional
     public Bet createBet (UUID gameId, Long playerId, double amount) {
+        if (!(amount > 0)) {
+            throw new IllegalStateException("Bet amount must be positive.");
+        }
         GameEntity game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new EntityNotFoundException("Game not found with id: " + gameId));
         if (game.getStarted()) {
@@ -62,7 +65,10 @@ public class BetService {
     @Transactional
     public Bet calculateWin (String clientId, Long betId, UUID gameId, double multiplier) {
         Bet bet = betRepository.findByIdAndClientId(betId, clientId)
-                .orElseThrow(() -> new EntityNotFoundException("Bet not found with id: " + clientId));
+                .orElseThrow(() -> new EntityNotFoundException("Bet not found with id: " + betId));
+        if (!bet.getGame().getId().equals(gameId)) {
+            throw new IllegalStateException("Cannot withdraw a bet: the bet belongs to another game.");
+        }
         if (bet.getWinAmount() > 0) {
             throw new IllegalStateException("Cannot withdraw a bet: the bet has already withdraw.");
         }

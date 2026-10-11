@@ -1,7 +1,6 @@
 import React from 'react'
 import styles from "./BetHistoryTile.module.scss";
 import Card from '../../../shared/Card/Card';
-import Layout from '../../../shared/Layout/Layout';
 import Avatar from '../../../shared/Avatar/Avatar';
 import Typography from '../../../shared/Typography/Typography';
 import { Bet } from '../../../store/game.store';

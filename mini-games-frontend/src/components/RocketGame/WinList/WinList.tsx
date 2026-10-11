@@ -1,4 +1,3 @@
-import React from "react";
 import Layout from "../../../shared/Layout/Layout";
 import WinElement from "./WinElement/WinElement";
 import styles from "./WinList.module.scss";

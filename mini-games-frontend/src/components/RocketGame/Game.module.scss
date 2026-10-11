@@ -1,12 +1,13 @@
 .container {
     border-radius: var(--border-radius);
     overflow: hidden;
+    flex-shrink: 0;
+    height: 72vh;
 
     & div {
         width: 100%;
         height: 100%;
     }
-    height: 72vh;
 }
 
 .relative {
@@ -18,9 +19,8 @@
 
 @media screen and (max-width: 1280px) {
     .container {
-        height: 100%;
-    }
-    .relative {
-        width: 100%;
+        // Сцена берёт размер из контейнера, поэтому высота должна быть задана явно
+        height: 40vh;
+        min-height: 240px;
     }
 }

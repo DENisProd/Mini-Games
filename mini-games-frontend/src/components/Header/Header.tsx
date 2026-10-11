@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styles from "./Header.module.scss";
 import GraduationCap from "../../assets/graduation_cap.svg";
 import { CircleHelp, WalletMinimal } from "lucide-react";
@@ -10,7 +10,7 @@ const Header = () => {
 
     useEffect(() => {
         getBalance();
-    }, [])
+    }, [getBalance]);
 
     return (
         <div className={styles.header}>

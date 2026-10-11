@@ -34,7 +34,10 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
     getBalance: () => {
         const { user } = get();
-        userService.getUserBalance(user?.clientId).then((balance) => set({ balance }));
+        userService
+            .getUserBalance(user.clientId)
+            .then((balance) => set({ balance }))
+            .catch(console.error);
     },
     setUser: (user: User) => {
         set({ user });

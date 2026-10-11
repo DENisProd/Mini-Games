@@ -1,21 +1,23 @@
+import axios from "axios";
 import { create } from "zustand";
+import { toast } from "react-toastify";
 import betService from "../service/bet.service";
 import gameService from "../service/game.service";
+import { useUserStore } from "./user.store";
 
 export interface Game {
     id: string;
     result: string;
     started: boolean;
-    createdAt: Date;
-    endedAt: Date | null;
+    createdAt: string;
+    endedAt: string | null;
 }
 
 export interface Bet {
     id: number;
     amount: number;
-    gameId: string;
     winAmount: number;
-    endedAt?: Date | null;
+    endedAt?: string | null;
 }
 
 interface GameState {
@@ -26,11 +28,15 @@ interface GameState {
 
     setGameId(gameId: string): void;
     createBet(gameId: string, clientId: string, amount: number): void;
-    withdrawBet(gameId: string, clientId: string, betId: number): void;
+    setCurrentBet(bet: Bet | null): void;
     getLastGames(): void;
     getLastBets(): void;
-    resetCurrentBet(): void;
 }
+
+const errorMessage = (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response?.data?.message) return error.response.data.message as string;
+    return "Не удалось связаться с сервером";
+};
 
 export const useGameStore = create<GameState>((set, get) => ({
     gameId: "",
@@ -39,27 +45,32 @@ export const useGameStore = create<GameState>((set, get) => ({
     currentBet: null,
 
     setGameId: (gameId: string) => {
-        set({ gameId });
+        // Новый раунд — ставка с прошлого раунда больше не актуальна
+        if (get().gameId !== gameId) set({ gameId, currentBet: null });
     },
     createBet: (gameId: string, clientId: string, amount: number) => {
-        betService.createBet(amount, clientId, gameId).then((result) => {
-            console.log("Сделана ставка", result);
-            set({ currentBet: result as unknown as Bet})
-        });
+        betService
+            .createBet(amount, clientId, gameId)
+            .then((bet) => {
+                set({ currentBet: bet });
+                useUserStore.getState().getBalance();
+            })
+            .catch((error) => toast.warn(errorMessage(error), { position: "bottom-right", theme: "dark" }));
     },
+    setCurrentBet: (bet: Bet | null) => {
+        set({ currentBet: bet });
+    },
+    // Бэкенд уже отдаёт списки от новых к старым
     getLastGames: () => {
-        gameService.getLastGames().then(games => {
-            set({ lastGames: games.sort((a, b) => a.endedAt - b.endedAt) });
-        });
+        gameService
+            .getLastGames()
+            .then((lastGames) => set({ lastGames }))
+            .catch(console.error);
     },
     getLastBets: () => {
-        betService.getLastBets().then(bets => set({ lastBets: bets.sort((a, b) => a.endedAt - b.endedAt) }));
-    },
-    withdrawBet: (gameId: string, clientId: string, betId: number) => {
-        console.log("вывожу выигрыш");
-        // betService.withdrawBet(betId, clientId, gameId).then((result) => console.log(result));
-    },
-    resetCurrentBet: () => {
-        set({ currentBet: null });
+        betService
+            .getLastBets()
+            .then((lastBets) => set({ lastBets }))
+            .catch(console.error);
     },
 }));

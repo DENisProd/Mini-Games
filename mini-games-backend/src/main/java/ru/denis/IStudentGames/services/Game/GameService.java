@@ -8,6 +8,7 @@ import ru.denis.IStudentGames.repositories.GameRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -29,7 +30,7 @@ public class GameService {
         if (gameOptional.isPresent()) {
             GameEntity game = gameOptional.get();
 
-            String formattedMultiplier = String.format("%.2f", gameResult) + "x";
+            String formattedMultiplier = String.format(Locale.US, "%.2f", gameResult) + "x";
 
             game.setResult(formattedMultiplier);
             game.setEndedAt(LocalDateTime.now());

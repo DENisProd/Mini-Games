@@ -1,5 +1,6 @@
 package ru.denis.IStudentGames.services.Player;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ public class PlayerService {
     @Transactional
     public Player getOrCreatePlayerByClientId(String clientId) {
         User user = userRepository.findByClientId(clientId)
-                .orElseThrow(() -> new RuntimeException("User with clientId " + clientId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with clientId " + clientId + " not found"));
 
         return playerRepository.findByUser(user)
                 .orElseGet(() -> {

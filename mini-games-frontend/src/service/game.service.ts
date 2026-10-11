@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Game } from "../store/game.store";
-import { host } from "./bet.service";
+import { host } from "./api";
 
 async function getLastGames () {
     const bets = await axios.get(host + "/game/");

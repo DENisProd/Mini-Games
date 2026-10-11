@@ -1,7 +1,6 @@
 package ru.denis.IStudentGames.models.Games;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -11,26 +10,30 @@ import ru.denis.IStudentGames.services.Bet.BetService;
 import ru.denis.IStudentGames.services.Game.GameService;
 import ru.denis.IStudentGames.utils.MultiplierGenerator;
 
-import java.util.Timer;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
 @Component
-public class RocketGame extends Game{
-    private final int MIN_BET_AMOUNT = 100;
-    private final double INITIAL_MULTIPLIER = 0.0;
+public class RocketGame extends Game {
+    private static final double INITIAL_MULTIPLIER = 1.0;
+    // Частота отправки множителя клиентам. Чем чаще, тем плавнее анимация на фронте.
+    private static final long TICK_MS = 100;
+    // Средний прирост множителя в секунду (как и раньше: ~0.025 за 300 мс).
+    private static final double MAX_INCREMENT_PER_TICK = 0.05 * TICK_MS / 300.0;
 
-    private UUID currentGameId;
-    private double currentMultiplier;
+    @Getter
+    private volatile UUID currentGameId;
+    @Getter
+    private volatile double currentMultiplier = INITIAL_MULTIPLIER;
+    private volatile boolean gameRunning = false;
     private double maxMultiplier;
-    private Timer timer;
-    private boolean isGameRunning;
 
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> multiplierTask;
+    private final MultiplierGenerator generator = new MultiplierGenerator();
 
     @Autowired
     private GameService gameService;
@@ -39,69 +42,68 @@ public class RocketGame extends Game{
 
     public RocketGame() {
         super("Rocket Game");
-        currentMultiplier = INITIAL_MULTIPLIER;
-        isGameRunning = false;
-        System.out.println("Init Game");
+    }
+
+    public boolean isGameRunning() {
+        return gameRunning;
     }
 
     @Override
-    public void startGame() {
-        currentMultiplier = 1.0;
-        System.out.println("Rocket Game started");
+    public synchronized void startGame() {
+        currentMultiplier = INITIAL_MULTIPLIER;
         currentGameId = gameService.createGame("").getId();
     }
 
     @Override
-    public void endGame() {
-        isGameRunning = false;
-        System.out.println("Rocket Game ended");
-        stopMultiplierUpdate();
-    }
-
-    public Bet withdraw(BetWithdrawDTO betWithdrawDTO) {
-        return betService.calculateWin(betWithdrawDTO.getClientId(), betWithdrawDTO.getBetId(), currentGameId, currentMultiplier);
-    }
-
-    public void startMultiplierUpdate(SimpMessagingTemplate messagingTemplate) {
-        this.isGameRunning = true;
-        gameService.updateStarted(currentGameId);
-
-        MultiplierGenerator generator = new MultiplierGenerator();
-        maxMultiplier = generator.generateMultiplier();
-        System.out.println("Maximum multiplier is set to: " + maxMultiplier);
-
-        scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            if (!isGameRunning) {
-                scheduler.shutdown();
-                return;
-            }
-
-            double value = Math.random() * 0.05;
-
-            if ((currentMultiplier + value) > maxMultiplier) {
-                isGameRunning = false;
-
-                messagingTemplate.convertAndSend("/topic/crush", currentMultiplier);
-
-                gameService.updateGame(currentGameId, currentMultiplier);
-                endGame();
-                scheduler.shutdown();
-                return;
-            }
-
-            updateMultiplier(value);
-            messagingTemplate.convertAndSend("/topic/multiplier", currentMultiplier);
-        }, 0, 300, TimeUnit.MILLISECONDS);
-    }
-
-    public void stopMultiplierUpdate() {
-        if (timer != null) {
-            timer.cancel();
+    public synchronized void endGame() {
+        gameRunning = false;
+        if (multiplierTask != null) {
+            multiplierTask.cancel(false);
+            multiplierTask = null;
         }
     }
 
-    public void updateMultiplier(double increment) {
-        currentMultiplier += increment;
+    /**
+     * Вывод ставки. Синхронизирован с тиком множителя, чтобы нельзя было
+     * забрать выигрыш после краша или по множителю, которого не было.
+     */
+    public synchronized Bet withdraw(BetWithdrawDTO betWithdrawDTO) {
+        if (!gameRunning) {
+            throw new IllegalStateException("Игра не идёт, вывести ставку нельзя");
+        }
+        return betService.calculateWin(betWithdrawDTO.getClientId(), betWithdrawDTO.getBetId(), currentGameId, currentMultiplier);
+    }
+
+    public synchronized void startMultiplierUpdate(SimpMessagingTemplate messagingTemplate) {
+        gameService.updateStarted(currentGameId);
+        maxMultiplier = generator.generateMultiplier();
+        gameRunning = true;
+
+        messagingTemplate.convertAndSend("/topic/multiplier", currentMultiplier);
+        multiplierTask = scheduler.scheduleAtFixedRate(() -> tick(messagingTemplate), TICK_MS, TICK_MS, TimeUnit.MILLISECONDS);
+    }
+
+    private synchronized void tick(SimpMessagingTemplate messagingTemplate) {
+        if (!gameRunning) {
+            return;
+        }
+        try {
+            double next = currentMultiplier + Math.random() * MAX_INCREMENT_PER_TICK;
+
+            if (next > maxMultiplier) {
+                endGame();
+                gameService.updateGame(currentGameId, currentMultiplier);
+                messagingTemplate.convertAndSend("/topic/crush", currentMultiplier);
+                return;
+            }
+
+            currentMultiplier = next;
+            messagingTemplate.convertAndSend("/topic/multiplier", currentMultiplier);
+        } catch (RuntimeException e) {
+            // Исключение внутри scheduleAtFixedRate молча останавливает задачу,
+            // а игровой цикл навсегда зависает в ожидании конца раунда.
+            e.printStackTrace();
+            endGame();
+        }
     }
 }
